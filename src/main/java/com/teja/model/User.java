@@ -32,5 +32,8 @@ public class User {
     private List<RestaurantDto> favorites = new ArrayList();
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // one user many addresses // when user deleted all the address will be deleted so used cascadetype.all
     private List<Address> addresses = new ArrayList<>();
-
+    public enum USER_ROLE {
+        ROLE_ADMIN,
+        ROLE_CUSTOMER
+    }
 }
