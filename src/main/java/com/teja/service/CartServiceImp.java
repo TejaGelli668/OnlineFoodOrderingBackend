@@ -9,9 +9,10 @@ import com.teja.repository.CartRepository;
 import com.teja.repository.FoodRepository;
 import com.teja.request.AddCartItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public class CartServiceImp implements CartService {
     @Autowired
     private CartRepository cartRepository;
@@ -95,15 +96,17 @@ public class CartServiceImp implements CartService {
     }
 
     @Override
-    public Cart findCartByUserId(String jwt) throws Exception {
-        User user = userService.findUserByJwtToken(jwt);
-        return cartRepository.findByCustomerId(user.getId());
+    public Cart findCartByUserId(Long userId) throws Exception {
+        //User user = userService.findUserByJwtToken(jwt);
+        Cart cart= cartRepository.findByCustomerId(userId);
+        cart.setTotal(calculateCartTotals(cart));
+        return cart;
     }
 
     @Override
-    public Cart clearCart(String jwt) throws Exception {
-        User user = userService.findUserByJwtToken(jwt);
-        Cart cart = findCartByUserId(jwt);
+    public Cart clearCart(Long userId) throws Exception {
+        //User user = userService.findUserByJwtToken(jwt);
+        Cart cart = findCartByUserId(userId);
 
         cart.getItems().clear();
         return cartRepository.save(cart);

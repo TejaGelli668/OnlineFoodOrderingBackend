@@ -2,8 +2,8 @@ package com.teja.controller;
 
 import com.teja.config.JwtProvider;
 import com.teja.model.Cart;
-import com.teja.model.USER_ROLE;
 import com.teja.model.User;
+import com.teja.model.USER_ROLE;
 import com.teja.repository.CartRepository;
 import com.teja.repository.UserRepository;
 import com.teja.request.LoginRequest;
@@ -39,10 +39,11 @@ public class AuthController {
     private CustomerUserDetailsService customerUserDetailsService;
     @Autowired
     private CartRepository cartRepository;
+
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse>createUserHandler(@RequestBody User user) throws Exception {
-        User isEmailExist=userRepository.findByEmail(user.getEmail());
-        if(isEmailExist!=null){
+    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody User user) throws Exception {
+        User isEmailExist = userRepository.findByEmail(user.getEmail());
+        if (isEmailExist != null) {
             throw new Exception("Email is already used with another account");
         }
         User createdUser = new User();
@@ -57,8 +58,7 @@ public class AuthController {
         cart.setCustomer(savedUser);
         cartRepository.save(cart);
 
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtprovider.generateToken(authentication);
@@ -67,44 +67,35 @@ public class AuthController {
         authResponse.setMessage("Register success");
         authResponse.setRole(savedUser.getRole());
 
-
-
         return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
-
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> signin(@RequestBody LoginRequest req){
+    public ResponseEntity<AuthResponse> signin(@RequestBody LoginRequest req) {
         String username = req.getEmail();
         String password = req.getPassword();
         Authentication authentication = authenticate(username, password);
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        String role=authorities.isEmpty()?null:authorities.iterator().next().getAuthority();
+        String role = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
 
         String jwt = jwtprovider.generateToken(authentication);
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwt(jwt);
         authResponse.setMessage("Login success");
-
-        authResponse.setRole(USER_ROLE.valueOf(role));
-
-
+        authResponse.setRole(USER_ROLE.valueOf(role)); // Use User.USER_ROLE
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
-
     }
 
     private Authentication authenticate(String username, String password) {
-        UserDetails userDetails=customerUserDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = customerUserDetailsService.loadUserByUsername(username);
 
-        if(userDetails==null){
+        if (userDetails == null) {
             throw new BadCredentialsException("Invalid username....");
         }
-        if(!passwordEncoder.matches(password,userDetails.getPassword())){
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("Password Not matched....");
         }
-        return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
-
 }

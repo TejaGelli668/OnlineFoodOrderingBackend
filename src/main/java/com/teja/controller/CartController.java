@@ -2,9 +2,11 @@ package com.teja.controller;
 
 import com.teja.model.Cart;
 import com.teja.model.CartItem;
+import com.teja.model.User;
 import com.teja.request.AddCartItemRequest;
 import com.teja.request.UpdateCartItemRequest;
 import com.teja.service.CartService;
+import com.teja.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private UserService userService;
 
     // Add an item to the cart
     @PutMapping("/cart/add")
@@ -41,14 +45,16 @@ public class CartController {
     // Clear all items from the cart
     @PutMapping("/cart/clear")
     public ResponseEntity<Cart> clearCart(@RequestHeader("Authorization") String jwt) throws Exception {
-        Cart cart = cartService.clearCart(jwt);
+        User user=userService.findUserByJwtToken(jwt);
+        Cart cart = cartService.clearCart(user.getId());
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
     // Get the user's cart
     @GetMapping("/cart")
     public ResponseEntity<Cart> findUserCart(@RequestHeader("Authorization") String jwt) throws Exception {
-        Cart cart = cartService.findCartByUserId(jwt);
+        User user=userService.findUserByJwtToken(jwt);
+        Cart cart = cartService.findCartByUserId(user.getId());
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 

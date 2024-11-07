@@ -1,9 +1,6 @@
 package com.teja.controller;
 
-import com.teja.model.Category;
-import com.teja.model.Food;
-import com.teja.model.Restaurant;
-import com.teja.model.User;
+import com.teja.model.*;
 import com.teja.request.CreateFoodRequest;
 import com.teja.service.FoodService;
 import com.teja.service.RestaurantService;
@@ -34,7 +31,7 @@ public class AdminFoodController {
         User user = userService.findUserByJwtToken(jwt);
 
         // Check if user has admin role
-        if (user.getRole() != User.USER_ROLE.ROLE_ADMIN) {
+        if (user.getRole() != USER_ROLE.ROLE_ADMIN) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -57,9 +54,10 @@ public class AdminFoodController {
         User user = userService.findUserByJwtToken(jwt);
 
         // Check if user has admin role
-        if (user.getRole() != User.USER_ROLE.ROLE_ADMIN) {
+        if (!USER_ROLE.ROLE_ADMIN.equals(user.getRole())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+
 
         // Delete the food item
         foodService.deleteFood(id);
@@ -76,7 +74,7 @@ public class AdminFoodController {
         User user = userService.findUserByJwtToken(jwt);
 
         // Check if user has admin role
-        if (user.getRole() != User.USER_ROLE.ROLE_ADMIN) {
+        if (user.getRole() != USER_ROLE.ROLE_ADMIN) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 

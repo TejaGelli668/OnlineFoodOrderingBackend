@@ -24,7 +24,7 @@ public class CustomerUserDetailsService implements UserDetailsService {
         if(user==null){
             throw new UsernameNotFoundException("user not found with email" +username);
         }
-        User.USER_ROLE role = user.getRole();
+        USER_ROLE role = user.getRole();
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
